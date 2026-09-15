@@ -2,8 +2,8 @@
 
 use Eloquage\Chunk\Chunk;
 
-it('preserves the package identity and exposes the split entrypoint', function () {
-    $instance = new Chunk();
+it('bootstraps the package entrypoint', function () {
+    $instance = new Chunk;
 
     expect($instance->name())->toBe('chunk')
         ->and($instance->split('chunk'))->toBe([
