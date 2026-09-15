@@ -66,7 +66,7 @@ final class Chunk
     }
 
     /**
-     * @param array<string, mixed> $options
+     * @param  array<string, mixed>  $options
      * @return array{strategy: string, format: string, unit: string, size: int, overlap: int}
      */
     private function validateOptions(array $options): array
@@ -161,8 +161,8 @@ final class Chunk
     }
 
     /**
-     * @param array{length: int, bytes: list<int>, lines: list<array{start: int, end: int}>} $source
-     * @param array{unit: string, size: int, overlap: int} $settings
+     * @param  array{length: int, bytes: list<int>, lines: list<array{start: int, end: int}>}  $source
+     * @param  array{unit: string, size: int, overlap: int}  $settings
      * @return list<array{start: int, end: int}>
      */
     private function windowSpans(string $text, array $source, array $settings): array
@@ -201,8 +201,8 @@ final class Chunk
     }
 
     /**
-     * @param array{length: int, bytes: list<int>, lines: list<array{start: int, end: int}>} $source
-     * @param array{format: string, unit: string, size: int, overlap: int} $settings
+     * @param  array{length: int, bytes: list<int>, lines: list<array{start: int, end: int}>}  $source
+     * @param  array{format: string, unit: string, size: int, overlap: int}  $settings
      * @return list<array{start: int, end: int}>
      */
     private function packSpans(string $text, array $source, array $settings): array
@@ -213,6 +213,7 @@ final class Chunk
         foreach ($pieces as $piece) {
             if ($piece['atomic'] || $this->measureSpan($text, $source, $piece['start'], $piece['end'], $settings['unit']) <= $settings['size']) {
                 $units[] = $piece;
+
                 continue;
             }
 
@@ -235,6 +236,7 @@ final class Chunk
 
                 $spans[] = ['start' => $unit['start'], 'end' => $unit['end']];
                 $previous = [$unit];
+
                 continue;
             }
 
@@ -243,6 +245,7 @@ final class Chunk
                     $this->selectOverlap($text, $source, $previous, $unit, $settings),
                     [$unit],
                 );
+
                 continue;
             }
 
@@ -250,6 +253,7 @@ final class Chunk
 
             if ($this->measureSpanFromUnits($text, $source, $candidate, $settings['unit']) <= $settings['size']) {
                 $current = $candidate;
+
                 continue;
             }
 
@@ -269,7 +273,7 @@ final class Chunk
     }
 
     /**
-     * @param array{length: int, bytes: list<int>, lines: list<array{start: int, end: int}>} $source
+     * @param  array{length: int, bytes: list<int>, lines: list<array{start: int, end: int}>}  $source
      * @return list<array{start: int, end: int, atomic: bool}>
      */
     private function structurePieces(string $text, array $source, bool $markdown): array
@@ -291,6 +295,7 @@ final class Chunk
                     'atomic' => true,
                 ];
                 $line = $close + 1;
+
                 continue;
             }
 
@@ -309,7 +314,7 @@ final class Chunk
     }
 
     /**
-     * @param array{length: int, bytes: list<int>, lines: list<array{start: int, end: int}>} $source
+     * @param  array{length: int, bytes: list<int>, lines: list<array{start: int, end: int}>}  $source
      * @return list<array{start: int, end: int, atomic: bool}>
      */
     private function markdownSegmentPieces(string $text, array $source, int $startLine, int $endLine): array
@@ -353,7 +358,7 @@ final class Chunk
     }
 
     /**
-     * @param array{length: int, bytes: list<int>, lines: list<array{start: int, end: int}>} $source
+     * @param  array{length: int, bytes: list<int>, lines: list<array{start: int, end: int}>}  $source
      * @return list<array{start: int, end: int, atomic: bool}>
      */
     private function headingPieces(string $text, array $source, int $headingLine, int $endLine): array
@@ -388,7 +393,7 @@ final class Chunk
     }
 
     /**
-     * @param array{length: int, bytes: list<int>, lines: list<array{start: int, end: int}>} $source
+     * @param  array{length: int, bytes: list<int>, lines: list<array{start: int, end: int}>}  $source
      * @return list<array{start: int, end: int, atomic: bool}>
      */
     private function paragraphPieces(string $text, array $source, int $startLine, int $endLine): array
@@ -430,7 +435,7 @@ final class Chunk
     /**
      * Return the first line after a non-blank paragraph, including its blank separator.
      *
-     * @param array{length: int, bytes: list<int>, lines: list<array{start: int, end: int}>} $source
+     * @param  array{length: int, bytes: list<int>, lines: list<array{start: int, end: int}>}  $source
      */
     private function paragraphEnd(string $text, array $source, int $startLine, int $endLine): int
     {
@@ -448,8 +453,8 @@ final class Chunk
     }
 
     /**
-     * @param array{start: int, end: int, atomic: bool} $piece
-     * @param array{unit: string, size: int, overlap: int} $settings
+     * @param  array{start: int, end: int, atomic: bool}  $piece
+     * @param  array{unit: string, size: int, overlap: int}  $settings
      * @return list<array{start: int, end: int, atomic: bool}>
      */
     private function splitOversizedPiece(string $text, array $source, array $piece, array $settings): array
@@ -495,11 +500,13 @@ final class Chunk
             if ($currentStart === null) {
                 $currentStart = $line['start'];
                 $currentEnd = $line['end'];
+
                 continue;
             }
 
             if ($this->measureSpan($text, $source, $currentStart, $line['end'], $settings['unit']) <= $settings['size']) {
                 $currentEnd = $line['end'];
+
                 continue;
             }
 
@@ -516,9 +523,9 @@ final class Chunk
     }
 
     /**
-     * @param list<array{start: int, end: int, atomic: bool}> $previous
-     * @param array{start: int, end: int, atomic: bool} $next
-     * @param array{unit: string, size: int, overlap: int} $settings
+     * @param  list<array{start: int, end: int, atomic: bool}>  $previous
+     * @param  array{start: int, end: int, atomic: bool}  $next
+     * @param  array{unit: string, size: int, overlap: int}  $settings
      * @return list<array{start: int, end: int, atomic: bool}>
      */
     private function selectOverlap(string $text, array $source, array $previous, array $next, array $settings): array
@@ -552,7 +559,7 @@ final class Chunk
     }
 
     /**
-     * @param list<array{start: int, end: int, atomic: bool}> $spanUnits
+     * @param  list<array{start: int, end: int, atomic: bool}>  $spanUnits
      * @return array{start: int, end: int}
      */
     private function spanFromUnits(array $spanUnits): array
@@ -564,7 +571,7 @@ final class Chunk
     }
 
     /**
-     * @param list<array{start: int, end: int, atomic: bool}> $units
+     * @param  list<array{start: int, end: int, atomic: bool}>  $units
      */
     private function measureSpanFromUnits(string $text, array $source, array $units, string $unit): int
     {
@@ -572,7 +579,7 @@ final class Chunk
     }
 
     /**
-     * @param array{length: int, bytes: list<int>, lines: list<array{start: int, end: int}>} $source
+     * @param  array{length: int, bytes: list<int>, lines: list<array{start: int, end: int}>}  $source
      */
     private function endWithinBudget(string $text, array $source, int $start, int $limit, int $budget, string $unit): int
     {
@@ -594,7 +601,7 @@ final class Chunk
     }
 
     /**
-     * @param array{length: int, bytes: list<int>, lines: list<array{start: int, end: int}>} $source
+     * @param  array{length: int, bytes: list<int>, lines: list<array{start: int, end: int}>}  $source
      */
     private function measureSpan(string $text, array $source, int $start, int $end, string $unit): int
     {
@@ -612,7 +619,7 @@ final class Chunk
     }
 
     /**
-     * @param array{bytes: list<int>} $source
+     * @param  array{bytes: list<int>}  $source
      */
     private function slice(string $text, array $source, int $start, int $end): string
     {
@@ -623,8 +630,8 @@ final class Chunk
     }
 
     /**
-     * @param array{length: int, bytes: list<int>, lines: list<array{start: int, end: int}>} $source
-     * @param array{start: int, end: int} $line
+     * @param  array{length: int, bytes: list<int>, lines: list<array{start: int, end: int}>}  $source
+     * @param  array{start: int, end: int}  $line
      */
     private function lineText(string $text, array $source, array $line): string
     {
@@ -647,7 +654,7 @@ final class Chunk
     }
 
     /**
-     * @param array{length: int, bytes: list<int>, lines: list<array{start: int, end: int}>} $source
+     * @param  array{length: int, bytes: list<int>, lines: list<array{start: int, end: int}>}  $source
      */
     private function findFenceEnd(string $text, array $source, int $openingLine): int
     {
