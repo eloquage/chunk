@@ -105,6 +105,45 @@ it('uses an injected token counter while retaining character offsets', function 
     }
 });
 
+it('advances character offsets when a token counter returns zero', function () {
+    $records = (new Chunk(static fn (string $value): int => 2))->split('ab', [
+        'unit' => 'tokens',
+        'size' => 1,
+    ]);
+
+    expect(array_column($records, 'text'))->toBe(['a', 'b'])
+        ->and(array_column($records, 'start'))->toBe([0, 1]);
+});
+
+it('packs Markdown headings without body text and preserves atomic code blocks', function () {
+    $records = (new Chunk)->split('## Intro', [
+        'strategy' => 'pack',
+        'format' => 'markdown',
+        'size' => 8,
+    ]);
+
+    expect(array_column($records, 'text'))->toBe(['## Intro']);
+});
+
+it('flushes fitting lines before splitting an oversized line and applies paragraph overlap', function () {
+    $text = "ab\ncd\n12345678\nEF";
+    $records = (new Chunk)->split($text, [
+        'strategy' => 'pack',
+        'size' => 7,
+    ]);
+
+    expect(implode('', array_column($records, 'text')))->toBe($text);
+
+    $overlapped = (new Chunk)->split("one\n\ntwo\n\nthree", [
+        'strategy' => 'pack',
+        'size' => 12,
+        'overlap' => 7,
+    ]);
+
+    expect($overlapped[0]['text'])->toStartWith("one\n\ntwo")
+        ->and($overlapped[1]['text'])->toStartWith("two\n\nthree");
+});
+
 it('rejects invalid options before producing records', function (array $options, string $message) {
     expect(fn () => (new Chunk)->split('text', $options))
         ->toThrow(InvalidArgumentException::class, $message);

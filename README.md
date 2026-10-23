@@ -1,5 +1,8 @@
 # Document chunking for RAG: overlapping windows, markdown/code-aware splits, and token-budget packing for embedding pipelines.
 
+<p align="center"><img src="art/banner.png" alt="chunk package banner" width="100%"></p>
+
+
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/eloquage/chunk.svg?style=flat-square)](https://packagist.org/packages/eloquage/chunk)
 [![Tests](https://github.com/eloquage/chunk/actions/workflows/run-tests.yml/badge.svg)](https://github.com/eloquage/chunk/actions/workflows/run-tests.yml)
 [![Total Downloads](https://img.shields.io/packagist/dt/eloquage/chunk.svg?style=flat-square)](https://packagist.org/packages/eloquage/chunk)
